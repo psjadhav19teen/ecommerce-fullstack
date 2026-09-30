@@ -1,0 +1,48 @@
+// Utility functions for authentication
+
+export const getToken = () => {
+  return localStorage.getItem('token');
+};
+
+export const getUser = () => {
+  const user = localStorage.getItem('user');
+  return user ? JSON.parse(user) : null;
+};
+
+export const setAuthData = (token, user) => {
+  localStorage.setItem('token', token);
+  localStorage.setItem('user', JSON.stringify(user));
+};
+
+export const clearAuthData = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+};
+
+export const isTokenExpired = () => {
+  const token = getToken();
+  if (!token) return true;
+  
+  try {
+    // Decode JWT token (simple base64 decode)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Date.now() / 1000;
+    return payload.exp < currentTime;
+  } catch (error) {
+    return true;
+  }
+};
+
+export const getUserRole = () => {
+  const user = getUser();
+  return user?.role || null;
+};
+
+export const hasRole = (role) => {
+  const userRole = getUserRole();
+  return userRole === role;
+};
+
+export const isAdmin = () => hasRole('ADMIN');
+export const isSeller = () => hasRole('SELLER');
+export const isUser = () => hasRole('USER');

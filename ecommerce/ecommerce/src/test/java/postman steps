@@ -1,0 +1,163 @@
+Step 1:
+manually register admin from mysql
+insert into ecommerce1.users values(1,"admin@gmail.com","$2a$12$P.EWM2.x5JiNw2e9doo5qe4B/ZxTyE1kYES7ZRabZ1KwXnzDpx1O.","ADMIN","NONE");
+
+Step 2:
+POST http://127.0.0.1:8080/api/auth/login
+{
+"email":"admin@gmail.com",
+"password":"admin"
+}
+
+admin token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9BRE1JTiIsImlhdCI6MTc3NzAwODgwMywiZXhwIjoxNzc3MDEyNDAzfQ.JiZgGeCqh7Cuj86PtXndhIH570AuOSN59tnUwzNkwV4
+add this into Authorization under Bearer Token
+
+
+Step 3: Adding new product by admin
+POST http://127.0.0.1:8080/api/products
+{
+    "category":"Electronics",
+    "description":"Apple iPhone 15 witj A16 chip",
+    "imageUrl":"https://example.com/iphone15.jpg",
+    "name":"iPhone 15",
+    "price": 67000.00,
+    "subcategory":"Mobile"
+}
+
+
+Step 4: create pooja new user registration
+
+POST http://127.0.0.1:8080/api/auth/register
+{
+"email":"pooja@gmail.com",
+"password":"pooja"
+}
+
+POST http://127.0.0.1:8080/api/auth/login
+{
+"email":"pooja@gmail.com",
+"password":"pooja"
+}
+
+pooja token:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb29qYUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzc3MDEwMTQ0LCJleHAiOjE3NzcwMTM3NDR9.hsOfUQsORUzUsuhsC9WkkotBE0R_QWChUyvGwq-8CBI
+
+it generate jwt token as response
+then add this token into authorization
+
+Step 5:
+Pooja trying to add new product  
+POST http://127.0.0.1:8080/api/products
+{
+	"name":"HP Pavilion",
+	"price": 40000.00,
+    "category":"Electronics",
+    "subcategory":"Laptop",
+    "description":"HP laptop with 512 SSD",
+    "imageUrl":"https://example.com/hp.jpg"
+}
+
+Now 403:forbidden error beacuase pooja doesn't have seller access
+So now pooja will send request to admin
+
+POST http://127.0.0.1:8080/api/seller/request
+
+To approve seller login to admin and use below endpoints
+POST http://127.0.0.1:8080/approve/2
+
+now try again to add product by login pooja
+
+POST http://127.0.0.1:8080/api/products
+{
+	"name":"HP Pavilion",
+	"price": 40000.00,
+    "category":"Electronics",
+    "subcategory":"Laptop",
+    "description":"HP laptop with 512 SSD",
+    "imageUrl":"https://example.com/hp.jpg"
+}
+
+We get error again forbidden so create new token by login pooja 
+
+POST http://127.0.0.1:8080/api/auth/login
+{
+"email":"pooja@gmail.com",
+"password":"pooja"
+}
+new token pooj:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwb29qYUBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9TRUxMRVIiLCJpYXQiOjE3NzcwMTEzNzcsImV4cCI6MTc3NzAxNDk3N30.o_1j6dGM49yCwLMBGMo3GA4a5kjUn3W5A9NYQ37UPSo
+Add token to authorization
+
+Now add new products
+
+POST http://127.0.0.1:8080/api/products
+{
+	"name":"HP Pavilion",
+	"price": 40000.00,
+    "category":"Electronics",
+    "subcategory":"Laptop",
+    "description":"HP laptop with 512 SSD",
+    "imageUrl":"https://example.com/hp.jpg"
+}
+
+{
+	"name":"Raymon T-shirt",
+	"price": 2000.00,
+    "category":"Cloths",
+    "subcategory":"Shirt",
+    "description":"Good",
+    "imageUrl":"https://example.com/shirt.jpg"
+}
+
+Step 6:
+New registration as USER 
+POST http://127.0.0.1:8080/api/auth/register
+{
+"email":"rohit@gmail.com",
+"password":"rohit"
+}
+
+POST http://127.0.0.1:8080/api/auth/login
+{
+"email":"rohit@gmail.com",
+"password":"rohit"
+}
+
+rohit token:eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb2hpdEBnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzc3MDEzMTcwLCJleHAiOjE3NzcwMTY3NzB9.O3IX6EcTVjwUQPHAMkpN55ggPUVaz27_vW8tJyafPIc
+
+
+Step 7: rohit will add to cart
+rohit will see his cart
+GET http://127.0.0.1:8080/api/cart
+
+Rohit has added two products as 1 and 2
+POST http://127.0.0.1:8080/api/cart/1
+POST http://127.0.0.1:8080/api/cart/1
+POST http://127.0.0.1:8080/api/cart/2
+
+Increase or Decrease Quantity Endpoints
+PUT http://127.0.0.1:8080/api/cart/increase/1
+PUT http://127.0.0.1:8080/api/cart/decrease/2
+
+
+Step 8: rohit will place order for available cart items
+rohit will his all orders
+GET http://127.0.0.1:8080/api/orders
+
+Place order
+POST http://127.0.0.1:8080/api/orders/placeorder
+
+Step 9:
+See prevoius payment
+GET http://127.0.0.1:8080/api/payments/my
+
+Make payment
+POST http://127.0.0.1:8080/api/payments/1?paymentMode=UPI
+
+
+
+
+
+
+
+
+
+
