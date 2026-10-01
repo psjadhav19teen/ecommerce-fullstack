@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8080';
+// Backend URL
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
   'https://ecommerce-fullstack-x4mv.onrender.com';
 
-// Create axios instance
+// Create Axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -14,63 +14,64 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to add JWT token
+// Add JWT token to every request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle errors
+// Handle API errors
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
+
   (error) => {
     if (error.response) {
       const { status, data } = error.response;
 
       switch (status) {
         case 401:
-          // Token expired or invalid
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           toast.error('Session expired. Please login again.');
           window.location.href = '/login';
           break;
+
         case 403:
           toast.error('Access denied. You do not have permission.');
           break;
+
         case 404:
           toast.error('Resource not found.');
           break;
+
         case 500:
           toast.error('Server error. Please try again later.');
           break;
+
         default:
-          if (data && data.message) {
-            toast.error(data.message);
-          } else {
-            toast.error('An error occurred. Please try again.');
-          }
+          toast.error(
+            data?.message || 'An error occurred. Please try again.'
+          );
       }
     } else if (error.request) {
       toast.error('Network error. Please check your connection.');
     } else {
       toast.error('An error occurred. Please try again.');
     }
+
     return Promise.reject(error);
   }
 );
 
-// Auth API
+// Authentication API
 export const authAPI = {
   register: (data) => api.post('/api/auth/register', data),
   login: (data) => api.post('/api/auth/login', data),
@@ -104,7 +105,7 @@ export const orderAPI = {
 
 // Payment API
 export const paymentAPI = {
-  processPayment: (orderId, paymentMode) => 
+  processPayment: (orderId, paymentMode) =>
     api.post(`/api/payments/${orderId}?paymentMode=${paymentMode}`),
 };
 
