@@ -1,5 +1,6 @@
 Step 1:
 manually register admin from mysql
+
 insert into ecommerce1.users values(1,"admin@gmail.com","$2a$12$P.EWM2.x5JiNw2e9doo5qe4B/ZxTyE1kYES7ZRabZ1KwXnzDpx1O.","ADMIN","NONE");
 
 Step 2:
